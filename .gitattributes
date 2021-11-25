@@ -1,0 +1,4 @@
+*.xz   binary
+*.pdf  binary
+*.epub binary
+*.sh   text eol=lf
