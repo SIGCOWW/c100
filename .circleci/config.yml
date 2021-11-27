@@ -6,7 +6,7 @@ jobs:
       - image: lrks/desk:kancolle
     steps:
       - checkout
-      - run: build.rb --pdf4print --pdf4publish --epub --workdir=/work/src --margin=3mm --verbose --strict
+      - run: build.rb --pdf4print --pdf4publish --workdir=/work/src --margin=3mm --verbose --strict
       - store_artifacts:
           path: /work/src/working_temporary_directory/original.pdf
       - store_artifacts:
@@ -15,7 +15,7 @@ jobs:
           path: /work/src/working_temporary_directory/publish-raw.pdf
       - store_artifacts:
           path: /work/src/working_temporary_directory/publish-ebook.pdf
-      - store_artifacts:
-          path: /work/src/working_temporary_directory/publish.epub
+      #- store_artifacts:
+      #    path: /work/src/working_temporary_directory/publish.epub
       - store_artifacts:
           path: /work/src/working_temporary_directory/book-text
