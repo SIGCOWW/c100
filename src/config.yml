@@ -1,6 +1,6 @@
 booktitle: "kmm?"                                # 本のタイトル
 aut: [ "SIGCOWW" ]                               # 著者リスト (EPUBで使われる)
-date: "2021-12-31"                               # 発行日
+date: "2022-08-13"                               # 発行日
 prt: "株式会社ポプルス"                          # 印刷所
 pbl: "SIGCOWW"                                   # 発行者
 oth: "https://sigcoww.org/"                      # Webサイト 省略可
