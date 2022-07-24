@@ -3,3 +3,4 @@ PREDEF:
 
 CHAPS:
   - sample.re
+  - netlink.re
