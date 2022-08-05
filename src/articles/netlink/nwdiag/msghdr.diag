@@ -1,0 +1,9 @@
+{
+  colwidth = 32
+
+  0-31: Length（ヘッダ込みの長さ）
+  32-47: Type
+  48-63: Flags
+  64-95: Sequence Number
+  96-127: Process ID (PID)
+}

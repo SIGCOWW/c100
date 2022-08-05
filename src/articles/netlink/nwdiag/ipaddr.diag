@@ -1,0 +1,9 @@
+{
+  colwidth = 32
+
+  0-7: Family（AF_INET, AF_INET6）
+  8-15: Length (of Address Mask)
+  16-23: Flags
+  24-31: Scope
+  32-63: Interface Index
+}

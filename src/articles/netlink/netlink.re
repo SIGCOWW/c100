@@ -30,22 +30,22 @@ ipコマンド（ユーザランドのプログラム）がカーネルにNetlin
 でも、RTNETLINK？Netlinkの話なのになんで先頭に@<b>{RT}があんだよ、教えはどうなってんだ教えはって話です。
 ここで@<bou>{RT}はRoutingのことを指します。
 Routingと@<b>{Net}linkなんてすごく関係していそうですね。
-Nelinkにはいくつか種類があり、その中のひとつがRTNETLINKです。
-他の種類、例えばnetfilter関連のNETLINK_NETFILTERや本当に「Linuxカーネルとユーザランドのプロセス間通信の仕組み」として使われるNETLINK_GENERICもあります。
+Nelinkにはいくつか種別があり、その中のひとつがRTNETLINKです。
+他の種別、例えばnetfilter関連のNETLINK_NETFILTERや本当に「Linuxカーネルとユーザランドのプロセス間通信の仕組み」として使われるNETLINK_GENERICもあります。
 が、本稿ではほぼRTNETLINKを中心に紹介していきます。
 
 ちなみに今回の説明ではipコマンドを使いましたが、ifconfigコマンドだとどうなるのでしょうか？
-ifconfigコマンドではioctlに基づいてカーネルとやりとりしするためNetlinkは関係ありません。任天堂とも無関係です。
+ifconfigではioctlに基づいてカーネルとやりとりしするためNetlinkは関係ありません。
 
 == Netlinkの繋ぎ方
 Netlinkには@<b>{FEC} (Forwarding Engine Component) と@<b>{CPC} (Control Plane Component) という概念が存在します。
-FECは典型的にはカーネル側の話、NetlinkのTypeのことです。
+FECは典型的にはカーネル側の話、RTNETLINKなどNetlinkの1種別のことです。
 CPCはユーザランドのプログラムを指します。
-図～のようにFECとCPCは@<b>{Wire}で繋がり、FECとCPCは1対多で接続可能、CPCは複数のWireに接続可能です。
+@<img>{logical}のようにFECとCPCは@<b>{Wire}で繋がり、FECとCPCは1対多で接続可能、CPCは複数のWireに接続可能です。
 例を挙げると、RTNETLINKという1つのFECに対して複数のipコマンドが接続でき、
 1つのipコマンドはRTNETLINK以外にも他のNetlink Typeに接続しようと思えばできます。
 
-図。RFCのbroadcast Wire
+//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.5]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
 下記はユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
@@ -65,14 +65,17 @@ struct sockaddr_nl {
 @<tt>{nl_pid}は宛先のPort IDまたはProcess IDです。
 カーネル宛の場合は@<tt>{0}になります。
 @<tt>{nl_groups}はMulticast Group (Bitmask)の指定です。
+
 NetlinkではMulticastメッセージが流れる@<fn>{multicast}ことがあり、
 @<tt>{nl_groups}で何のメッセージを受け取るか？または受け取らないか指定できます。
 たとえば、FECにRTNETLINKを指定して@<tt>{nl_groups}を@<tt>{RTMGRP_LINK | RTMGRP_NEIGH}とすると、
 NICのLink状態またはip neigh (ARP Table) が変わった際に通知を受けられます@<fn>{rtnetlinkh}。
+便利ですね、この通知が受けられるというのはこれだけでNetlinkを利用する価値のある機能だと思います。
+この機能があることで、例えばDPDKのアプリケーションでもカーネルのFIBと同期するようなことが可能です。
 //footnote[multicast][CAP_NET_ADMIN権限があればWireに対してMulticastメッセージを流すこともできます。とはいえカーネル以外でメッセージを流したい場合はあるんですかね…？]
 //footnote[rtnetlinkh][他の値はrtnetlink.hにあります @<href>{https://github.com/torvalds/linux/blob/e2b542100719a93f8cdf6d90185410d38a57a4c1/include/uapi/linux/rtnetlink.h#L677-L695}]
 
-なお、とりあえずRTNETLINKで流れてくるMulticastメッセージが見たいという場合は@<code>{ip monitor}コマンドで確認できます。
+なお、とりあえずRTNETLINKで流れてくるメッセージが見たいという場合は@<code>{ip monitor}コマンドで確認できます。
 //cmd{
 $ ip monitor
 fe80::812:1 dev ens3 lladdr xx:xx:xx:a0:00:6f router REACHABLE
@@ -94,9 +97,9 @@ RTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmo
 ペイロードが大きい場合は複数のメッセージ (Multipart Message) に分割可能です。
 
 === Netlink Message Header
-まずNetlink Message Headerの構成は、図～のとおりです。
+まずNetlink Message Headerの構成は、@<img>{msghdr}のとおりです。
 
-RFCのを清書した図
+//image[msghdr][Netlink Message Header（RFC3549を基に作成）][scale=0.5]
 
 ここでTypeには次のような値が入ります。
 
@@ -178,15 +181,15 @@ RTNETLINKを利用する場合のペイロードについてです。
 以下からは各``T''とAttributeについて詳細を述べていきます。
 
 ==== Link
-NICの作成削除、Link Up/Downといった状態の取得や変更を行う場合、図～のヘッダが利用されます。
+NICの作成削除、Link Up/Downといった状態の取得や変更を行う場合、@<img>{link}のヘッダが利用されます。
 
-RFCの清書
+//image[link][Network Interface Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
 
 Netlink Message HeaderのTypeにRTM_NEWLINK、RTM_DELLINK、RTM_GETLINKのいずれかが入ってきたらこのペイロードが付いています。
 Device FlagsはNETDEVICEのflags@<fn>{netdevice}です。
 //footnote[netdevice][@<href>{https://github.com/spotify/linux/blob/6eb782fc88d11b9f40f3d1d714531f22c57b39f9/include/linux/if.h#L30-L57}]
 
-そして、この図～のあとにAttributeが続きます。
+そして、この@<img>{link}のあとにAttributeが続きます。
 Attributeの構造は下記のとおりTLV@<fn>{ltv}です。
 //emlist{
 struct rtattr {
@@ -208,7 +211,9 @@ typeがIFLA_MTUでValueは名前通りMTUだったりします。
 //footnote[do_setlink][@<href>{https://github.com/torvalds/linux/blob/b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1/net/core/rtnetlink.c#L2650}]
 
 ==== Neighbor (ARP)
-ARPエントリに関するメッセージは図～が利用されます。
+ARPエントリに関するメッセージは@<img>{neighbor}が利用されます。
+
+//image[neighbor][Neighbor Setup Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
 
 RFCの清書
 
@@ -216,17 +221,17 @@ Netlink Message HeaderのTypeはRTM_NEWNEIGHなどNEIGH系です。
 この後にも@<tt>{rtattr}が続き、その@<tt>{rta_type}は例えばNDA_DST（IPアドレスについて）やNDA_LLADDR（MACアドレスについて）となります。
 
 ==== Address
-つぎは（IP）アドレス系です。図は～～～です。
+つぎは（IP）アドレス系です。図は@<img>{ipaddr}です。
 
-RFCの清書
+//image[ipaddr][IP Address Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
 
 Netlink Message HeaderのTypeはADDR系です。
 もちろん@<tt>{rtattr}も続き、IPアドレスやブロードキャストアドレスが入ります。
 
 ==== Routing
-Routing系です。図はこれ
+Routing系です。@<img>{routing}。
 
-RFCの清書
+//image[routing][Network Route Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
 
 Netlink Message HeaderのTypeはROUTE系です。
 あの@<tt>{rtattr}も続き、宛先経路のアドレスやゲートウェイの情報が入ります。
@@ -234,8 +239,9 @@ Netlink Message HeaderのTypeはROUTE系です。
 ROUTE系は他のものに比べ、Attributeが多いです。
 RTA_MULTIPATHというAttributesもあるのですが、このパースは複雑で混乱しました。
 MULTIPATHというだけあって長さは可変長になりそうですがその通りで、
-このRTA_MULTIPATHの中でさらに@<tt>{rtattr}が繰り返されるような形、
-元々ペイロードがTLVでその中のVがTLVでさらにその中のVがTVLで…といま思い出そうとしてもあまり考えずにいたいところです。
+このRTA_MULTIPATHの中でヘッダとは別にさらに@<tt>{rtattr} (RTA_GATEWAY) が繰り返されるような形です。
+このRTA_GATEWAY自体も固定長ではなくIPv4とIPv6の場合で長さが変わり、当然Multipath中にIPv4,IPv6のGATEWAYが混在する可能性もあります。
+元々Netlinkのペイロード自体がTLVでその中のVがTLVでさらにその中のVがTVLで…といま思い出そうとしてもあまり考えずにいたいところです。
 
 ==== その他
 Link、Neighbor、Address、Routingについて紹介しました。

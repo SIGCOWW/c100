@@ -1,0 +1,11 @@
+{
+  colwidth = 32
+
+  0-7: Family（AF_INET, AF_INET6）
+  8-15: Reserved 1
+  16-31: Reserved 2
+  32-63: Interface Index
+  64-79: State (NUD_REACHABLE, NUD_PERMANENTなどのbitmask)
+  80-87: Flags
+  88-95: Type
+}
