@@ -1,5 +1,5 @@
 = ねっとりNetlink
-@<author>{WSSがURI Schemeにしか見えない, lrks}
+@<author>{WSS（私が先に好きだったのに）がURI Schemeにしか見えない, lrks}
 //lead{
 ねっとり霊夢です。ねっとり魔理沙だぜ。今日はNetlinkについて紹介していくぜ。
 これを読めばWeb3がいちばんやさしく@<ruby>{理解,わか}らせられるって話だぜ。
@@ -23,8 +23,8 @@ RTNETLINK answers: File exists
 大抵は同名のLoopbackインターフェースが存在するため作成できません。
 でもよく見たら、RT@<b>{NETLINK}って書いていませんか？
 はい、ipコマンドはNetlinkを使います。
-ipコマンド（ユーザランドのプログラム）がカーネルにNetlink経由で接続しdummyインターフェースの作成を指示、
-カーネル側はすでに同名のインターフェースが存在したため作成に失敗したことを通知しています。
+前述の出力はipコマンド（ユーザランドのプログラム）がカーネルにNetlink経由で接続しdummyインターフェースの作成を指示した、
+がカーネル側はすでに同名のインターフェースが存在したため作成に失敗したことを通知しています。
 //footnote[lo][名前に意味はありません。偶然だぞ。]
 
 でも、RTNETLINK？Netlinkの話なのになんで先頭に@<b>{RT}があんだよ、教えはどうなってんだ教えはって話です。
@@ -43,9 +43,9 @@ FECは典型的にはカーネル側の話、RTNETLINKなどNetlinkの1種別の
 CPCはユーザランドのプログラムを指します。
 @<img>{logical}のようにFECとCPCは@<b>{Wire}で繋がり、FECとCPCは1対多で接続可能、CPCは複数のWireに接続可能です。
 例を挙げると、RTNETLINKという1つのFECに対して複数のipコマンドが接続でき、
-1つのipコマンドはRTNETLINK以外にも他のNetlink Typeに接続しようと思えばできます。
+1つのipコマンドはRTNETLINK以外にも他のNetlink種別に接続しようと思えばできます。
 
-//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
+//imagew[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
 下記はユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
@@ -99,7 +99,7 @@ RTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmo
 === Netlink Message Header
 まずNetlink Message Headerの構成は、@<img>{msghdr}のとおりです。
 
-//image[msghdr][Netlink Message Header（RFC3549を基に作成）][scale=1]
+//imagew[msghdr][Netlink Message Header（RFC3549を基に作成）][scale=1]
 
 ここでTypeには次のような値が入ります。
 
@@ -183,7 +183,7 @@ RTNETLINKを利用する場合のペイロードについてです。
 ==== Link
 NICの作成削除、Link Up/Downといった状態の取得や変更を行う場合、@<img>{link}のヘッダが利用されます。
 
-//image[link][Network Interface Service ModuleのHeader（RFC3549を基に作成）][scale=1]
+//imagew[link][Network Interface Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeにRTM_NEWLINK、RTM_DELLINK、RTM_GETLINKのいずれかが入ってきたらこのペイロードが付いています。
 Device FlagsはNETDEVICEのflags@<fn>{netdevice}です。
@@ -213,9 +213,7 @@ typeがIFLA_MTUでValueは名前通りMTUだったりします。
 ==== Neighbor (ARP)
 ARPエントリに関するメッセージは@<img>{neighbor}が利用されます。
 
-//image[neighbor][Neighbor Setup Service ModuleのHeader（RFC3549を基に作成）][scale=1]
-
-RFCの清書
+//imagew[neighbor][Neighbor Setup Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeはRTM_NEWNEIGHなどNEIGH系です。
 この後にも@<tt>{rtattr}が続き、その@<tt>{rta_type}は例えばNDA_DST（IPアドレスについて）やNDA_LLADDR（MACアドレスについて）となります。
@@ -223,7 +221,7 @@ Netlink Message HeaderのTypeはRTM_NEWNEIGHなどNEIGH系です。
 ==== Address
 つぎは（IP）アドレス系です。図は@<img>{ipaddr}です。
 
-//image[ipaddr][IP Address Service ModuleのHeader（RFC3549を基に作成）][scale=1]
+//imagew[ipaddr][IP Address Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeはADDR系です。
 もちろん@<tt>{rtattr}も続き、IPアドレスやブロードキャストアドレスが入ります。
@@ -231,7 +229,7 @@ Netlink Message HeaderのTypeはADDR系です。
 ==== Routing
 Routing系です。@<img>{routing}。
 
-//image[routing][Network Route Service ModuleのHeader（RFC3549を基に作成）][scale=1]
+//imagew[routing][Network Route Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeはROUTE系です。
 あの@<tt>{rtattr}も続き、宛先経路のアドレスやゲートウェイの情報が入ります。
@@ -241,7 +239,9 @@ RTA_MULTIPATHというAttributesもあるのですが、このパースは複雑
 MULTIPATHというだけあって長さは可変長になりそうですがその通りで、
 このRTA_MULTIPATHの中でヘッダとは別にさらに@<tt>{rtattr} (RTA_GATEWAY) が繰り返されるような形です。
 このRTA_GATEWAY自体も固定長ではなくIPv4とIPv6の場合で長さが変わり、当然Multipath中にIPv4,IPv6のGATEWAYが混在する可能性もあります。
-元々Netlinkのペイロード自体がTLVでその中のVがTLVでさらにその中のVがTVLで…といま思い出そうとしてもあまり考えずにいたいところです。
+元々Netlinkのペイロード自体がTLVでその中のVがTLVでさらにその中のVがTVLで…全体的にはTL(TL(TLV)*)的な、え？最後TLVだった？いやVLT？？？といま思い出そうとしてもあまり考えずにいたいところです。
+もう考えたくありません。
+でも出来たから良いんです。
 
 ==== その他
 Link、Neighbor、Address、Routingについて紹介しました。
