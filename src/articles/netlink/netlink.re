@@ -1,5 +1,5 @@
 = ねっとりNetlink
-#@#@<author>{そういうのどうよ正す？, lrks}
+@<author>{WSSがURI Schemeにしか見えない, lrks}
 //lead{
 ねっとり霊夢です。ねっとり魔理沙だぜ。今日はNetlinkについて紹介していくぜ。
 これを読めばWeb3がいちばんやさしく@<ruby>{理解,わか}らせられるって話だぜ。
@@ -45,7 +45,7 @@ CPCはユーザランドのプログラムを指します。
 例を挙げると、RTNETLINKという1つのFECに対して複数のipコマンドが接続でき、
 1つのipコマンドはRTNETLINK以外にも他のNetlink Typeに接続しようと思えばできます。
 
-//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.5]
+//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
 下記はユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
@@ -99,7 +99,7 @@ RTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmo
 === Netlink Message Header
 まずNetlink Message Headerの構成は、@<img>{msghdr}のとおりです。
 
-//image[msghdr][Netlink Message Header（RFC3549を基に作成）][scale=0.5]
+//image[msghdr][Netlink Message Header（RFC3549を基に作成）][scale=1]
 
 ここでTypeには次のような値が入ります。
 
@@ -183,7 +183,7 @@ RTNETLINKを利用する場合のペイロードについてです。
 ==== Link
 NICの作成削除、Link Up/Downといった状態の取得や変更を行う場合、@<img>{link}のヘッダが利用されます。
 
-//image[link][Network Interface Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
+//image[link][Network Interface Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeにRTM_NEWLINK、RTM_DELLINK、RTM_GETLINKのいずれかが入ってきたらこのペイロードが付いています。
 Device FlagsはNETDEVICEのflags@<fn>{netdevice}です。
@@ -213,7 +213,7 @@ typeがIFLA_MTUでValueは名前通りMTUだったりします。
 ==== Neighbor (ARP)
 ARPエントリに関するメッセージは@<img>{neighbor}が利用されます。
 
-//image[neighbor][Neighbor Setup Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
+//image[neighbor][Neighbor Setup Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 RFCの清書
 
@@ -223,7 +223,7 @@ Netlink Message HeaderのTypeはRTM_NEWNEIGHなどNEIGH系です。
 ==== Address
 つぎは（IP）アドレス系です。図は@<img>{ipaddr}です。
 
-//image[ipaddr][IP Address Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
+//image[ipaddr][IP Address Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeはADDR系です。
 もちろん@<tt>{rtattr}も続き、IPアドレスやブロードキャストアドレスが入ります。
@@ -231,7 +231,7 @@ Netlink Message HeaderのTypeはADDR系です。
 ==== Routing
 Routing系です。@<img>{routing}。
 
-//image[routing][Network Route Service ModuleのHeader（RFC3549を基に作成）][scale=0.5]
+//image[routing][Network Route Service ModuleのHeader（RFC3549を基に作成）][scale=1]
 
 Netlink Message HeaderのTypeはROUTE系です。
 あの@<tt>{rtattr}も続き、宛先経路のアドレスやゲートウェイの情報が入ります。
@@ -253,7 +253,7 @@ NetlinkとRTNETLINKをまとめました。
 
 実は元ネタは社内勉強会の資料です。@<fn>{dojin}
 当時作成した際は記憶が鮮明でしたが時間が経つに連れて記憶が薄れていっているところ、今回改めて理解を深める機会となり良かった。
-//footnote[dojin][今回の同人誌は当然プライベートの時間で作成しました。社内限定の資料も参照していません。本当です。]
+//footnote[dojin][今回の同人誌は当然プライベートの時間で作成しました。社内限定の資料も参照していません。本当です。でも自分が個人的に休暇で作成し社内で共有した資料は参照しました。すみません。]
 
 その社内勉強会でまとめた動機としては、すでにNetlinkとRTNETLINKを使っているプログラムがあり、
 そのプログラムで新たなNetlink Messageを読むためNetlinkの理解を深めるというものでした。
