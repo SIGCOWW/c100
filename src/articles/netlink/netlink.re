@@ -1,5 +1,5 @@
 = ねっとりNetlink
-@<author>{WSS（私が先に好きだったのに）がURI Schemeにしか見えない, lrks}
+@<author>{WSSがURI Schemeにしか見えない, lrks}
 //lead{
 ねっとり霊夢です。ねっとり魔理沙だぜ。今日はNetlinkについて紹介していくぜ。
 これを読めばWeb3がいちばんやさしく@<ruby>{理解,わか}らせられるって話だぜ。
@@ -10,12 +10,13 @@
 出典はRFC 3549@<fn>{rfc3549}および@<code>{man 7 netlink}、@<code>{man 7 rtnetlink}です。
 //footnote[rfc3549][J.Salim, H.Khosravi, A.Kleen, A.Kuznetsov. ``Linux Netlink as an IP Services Protocol'', RFC 3549.]
 
-まずNetlinkって何？という話です。
-Netlinkとは、端的に換言すると「Linuxカーネルとユーザランドのプロセス間通信の仕組み」です。
+まずNetlinkって何か（ねっとり）という話です。
+Netlinkとは「Linuxカーネルとユーザランドのプロセス間通信」です。
+端的に換言せずともIPC (Interprocess Communication)。
 @<tt>{AF_NETLINK}に対してSocketを作ることでNetlinkに接続できます。
 
 たとえば、ipコマンドを利用して``lo''@<fn>{lo}という名前のdummyインターフェースを追加してみましょう。
-実際実行してみると下記のようになると思います。
+実際実行してみると次のようになると思います。
 //cmd{
 $ sudo ip link add lo type dummy
 RTNETLINK answers: File exists
@@ -31,11 +32,11 @@ RTNETLINK answers: File exists
 ここで@<bou>{RT}はRoutingのことを指します。
 Routingと@<b>{Net}linkなんてすごく関係していそうですね。
 Nelinkにはいくつか種別があり、その中のひとつがRTNETLINKです。
-他の種別、例えばnetfilter関連のNETLINK_NETFILTERや本当に「Linuxカーネルとユーザランドのプロセス間通信の仕組み」として使われるNETLINK_GENERICもあります。
-が、本稿ではほぼRTNETLINKを中心に紹介していきます。
+他の種別、例えばnetfilter関連のNETLINK_NETFILTERや本当にLinuxカーネルとユーザランドのIPCとして利用可能なNETLINK_GENERICもあります。
+が、それらは割愛して本稿ではRTNETLINKを中心に紹介していきます。
 
 ちなみに今回の説明ではipコマンドを使いましたが、ifconfigコマンドだとどうなるのでしょうか？
-ifconfigではioctlに基づいてカーネルとやりとりしするためNetlinkは関係ありません。
+ifconfigではprocfsとioctlに基づいてカーネルとやりとりしするためNetlinkは関係ありません。
 
 == Netlinkの繋ぎ方
 Netlinkには@<b>{FEC} (Forwarding Engine Component) と@<b>{CPC} (Control Plane Component) という概念が存在します。
@@ -48,7 +49,7 @@ CPCはユーザランドのプログラムを指します。
 //imagew[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
-下記はユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
+次のコードはユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
 //emlist{
 int fd = socket(AF_NETLINK, SOCK_RAW, <FEC番号>);
 bind(fd, struct sockaddr_nl *sa, socklen_t sa_len);
@@ -61,8 +62,8 @@ struct sockaddr_nl {
 };
 //}
 
-@<tt>{nl}はNetlinkのことを指します。
-@<tt>{nl_pid}は宛先のPort IDまたはProcess IDです。
+接(頭|尾)辞に使われる@<tt>{nl}はNetlinkのことを指します。
+@<tt>{sockaddr_nl}の@<tt>{nl_pid}は宛先のPort IDまたはProcess IDです。
 カーネル宛の場合は@<tt>{0}になります。
 @<tt>{nl_groups}はMulticast Group (Bitmask)の指定です。
 
@@ -71,7 +72,8 @@ NetlinkではMulticastメッセージが流れる@<fn>{multicast}ことがあり
 たとえば、FECにRTNETLINKを指定して@<tt>{nl_groups}を@<tt>{RTMGRP_LINK | RTMGRP_NEIGH}とすると、
 NICのLink状態またはip neigh (ARP Table) が変わった際に通知を受けられます@<fn>{rtnetlinkh}。
 便利ですね、この通知が受けられるというのはこれだけでNetlinkを利用する価値のある機能だと思います。
-この機能があることで、例えばDPDKのアプリケーションでもカーネルのFIBと同期するようなことが可能です。
+（というか他に実現する方法あるのかな…？）
+この機能があることで、例えばDPDKなどで実現され本来カーネルのFIBを見ないようなアプリケーションでもカーネルの内容と同期するようなことが可能です。
 //footnote[multicast][CAP_NET_ADMIN権限があればWireに対してMulticastメッセージを流すこともできます。とはいえカーネル以外でメッセージを流したい場合はあるんですかね…？]
 //footnote[rtnetlinkh][他の値はrtnetlink.hにあります @<href>{https://github.com/torvalds/linux/blob/e2b542100719a93f8cdf6d90185410d38a57a4c1/include/uapi/linux/rtnetlink.h#L677-L695}]
 
@@ -85,12 +87,17 @@ fe80::812:3 dev ens3 lladdr xx:xx:xx:42:72:17 router STALE
 :
 ^C
 //}
-RTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmon@<fn>{nlmon}やnltrace@<fn>{nltrace}も使えるみたいです。
+何かメッセージを受信するたびに1行ずつ出力されていきます。
+何を受信したときにどんな動きをしたいかにもよりますが、非常に簡単なものの場合は自前でRTNETLINKに接続せずとも、
+この出力をパースすることでNICのUp/Downに反応するなどはできそうです。
+
+ちなみにRTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmon@<fn>{nlmon}やnltrace@<fn>{nltrace}も使えます。
+nlmonで取ったデータはWiresharkで表示可能です。Packet DiagramもMessage Header（後述）くらいは出てきます。
 //footnote[nlmon][netlinkファンのためのnlmon - Qiita @<href>{https://qiita.com/kwi/items/991c3bd01889db45307e}]
 //footnote[nltrace][@<href>{https://github.com/socketpair/nltrace}]
 
 == Message Format
-先ほど作成したSocketに対し、メッセージを送受信することでFECに指示または情報を受け取れます。
+Netlink Socketに対し、メッセージを送受信することでFECに指示または情報を受け取れます。
 ここではそのメッセージのFormatについて扱います。
 
 メッセージは、1つ以上の「@<b>{Netlink Message Header}とペイロード（各FECのデータ）」で構成されます。
@@ -117,7 +124,7 @@ RTNETLINKに限らずNetlink全体のメッセージが見たい場合は、nlmo
 また、FECによってはここを拡張することもあります。
 例えばRTNETLINKなら、RTM_NEWLINK、RTM_DELLINK、RTM_GETLINKといったTypeが増えます。
 
-Flags (Bitmask) には下記のようなFlagが入ります。
+Flags (Bitmask) に次のようなFlagが入ります。
 
 : NLM_F_REQUEST
   リクエストメッセージ。
@@ -132,17 +139,23 @@ Flags (Bitmask) には下記のようなFlagが入ります。
   一般的にはCPC（ユーザランド）からFEC（カーネル）に送られる。
   TypeにNLMSG_NOOPと組み合わせてハートビートが可能。
 
-FECがRTNETLINKで、TypeにRTM_GETLINKなどをGET系だった場合、下記のFlagも使われます。
+FECがRTNETLINKで、TypeにRTM_GETLINKなどをGET系だった場合、次のFlagも使われます。
 
 : NLM_F_ROOT
   単一のエントリではなく完全なテーブルを返す
 : NLM_F_MATCH
   内容に一致したすべてのエントリを返す
 
-具体的には@<code>{$ ip route}では、@<tt>{NLM_F_REQUEST | NLM_F_ROOT | NLM_F_MATCH}ですが、
-@<code>{$ ip route get <特定のネットワーク>}では、@<tt>{NLM_F_REQUEST}のみになります。
+具体的な使われた方としては次のとおりです。
+//cmd{
+# flags = NLM_F_REQUEST | NLM_F_ROOT | NLM_F_MATCH
+$ ip route
 
-また、TypeにRTM_NEWLINKなどNEW系を指定した場合は下記も使われます。
+# flags = NLM_F_REQUEST
+$ $ ip route get <特定のネットワーク>
+//}
+
+また、TypeにRTM_NEWLINKなどNEW系を指定した場合は次も使われます。
 
 : NLM_F_REPLACE
   条件に一致したエントリをリクエストの内容で上書きする
@@ -153,7 +166,7 @@ FECがRTNETLINKで、TypeにRTM_GETLINKなどをGET系だった場合、下記�
 : NLM_F_APPEND
   エントリに追記する
 
-具体的には下記の通りです。
+具体的には次のとおりです。
 //cmd{
 # NLM_F_CREATE -> OK
 $ ip route add 192.168.1.0/24 nexthop via 169.254.0.1 dev eth0
@@ -190,7 +203,7 @@ Device FlagsはNETDEVICEのflags@<fn>{netdevice}です。
 //footnote[netdevice][@<href>{https://github.com/spotify/linux/blob/6eb782fc88d11b9f40f3d1d714531f22c57b39f9/include/linux/if.h#L30-L57}]
 
 そして、この@<img>{link}のあとにAttributeが続きます。
-Attributeの構造は下記のとおりTLV@<fn>{ltv}です。
+Attributeの構造は@<tt>{rtattr}のとおりTLV@<fn>{ltv}です。
 //emlist{
 struct rtattr {
   unsigned short rta_len;
@@ -198,7 +211,7 @@ struct rtattr {
   /* Value */
 };
 //}
-この@<tt>{rtattr}は複数個連続してつく場合もあります。
+この@<tt>{rtattr}は複数個がくっついて送られる場合もあります。
 連続して付いても、Lengthの情報はあるのでパースは出来ます。
 //footnote[ltv][Length, Type, Valueの順なので正確には@<b>{LTV}とでも呼んだら良いでしょうか。]
 
@@ -240,23 +253,22 @@ MULTIPATHというだけあって長さは可変長になりそうですがそ�
 このRTA_MULTIPATHの中でヘッダとは別にさらに@<tt>{rtattr} (RTA_GATEWAY) が繰り返されるような形です。
 このRTA_GATEWAY自体も固定長ではなくIPv4とIPv6の場合で長さが変わり、当然Multipath中にIPv4,IPv6のGATEWAYが混在する可能性もあります。
 元々Netlinkのペイロード自体がTLVでその中のVがTLVでさらにその中のVがTVLで…全体的にはTL(TL(TLV)*)的な、え？最後TLVだった？いやVLT？？？といま思い出そうとしてもあまり考えずにいたいところです。
-もう考えたくありません。
-でも出来たから良いんです。
+もう考えたくありません。出来たから良いんです。
 
 ==== その他
 Link、Neighbor、Address、Routingについて紹介しました。
-このほか、Traffic Controlに関するメッセージもあるのですが省略します。
+このほか、Traffic Controlに関するメッセージもあるのですが使わなかったため省略します。
 
 
 == まとめ
-NetlinkとRTNETLINKをまとめました。
+NetlinkとRTNETLINKについてまとめました。
 
-実は元ネタは社内勉強会の資料です。@<fn>{dojin}
+実は元ネタは社内勉強会の資料です@<fn>{dojin}。
 当時作成した際は記憶が鮮明でしたが時間が経つに連れて記憶が薄れていっているところ、今回改めて理解を深める機会となり良かった。
-//footnote[dojin][今回の同人誌は当然プライベートの時間で作成しました。社内限定の資料も参照していません。本当です。でも自分が個人的に休暇で作成し社内で共有した資料は参照しました。すみません。]
+//footnote[dojin][今回の同人誌は当然プライベートの時間で作成しました。社内限定の資料も参照していません。本当です。でも自分が休暇中に作成し社内で共有した資料は参照しました。すみません。]
 
-その社内勉強会でまとめた動機としては、すでにNetlinkとRTNETLINKを使っているプログラムがあり、
+その勉強会でまとめた動機としては、すでにNetlinkとRTNETLINKを使っているプログラムがあり、
 そのプログラムで新たなNetlink Messageを読むためNetlinkの理解を深めるというものでした。
 そのためイチからNetlinkにSocket張ったり、ライブラリ (libnetlink) については本稿でも端折り気味です。
-今後、今回のコピー本が再録されるときにはまとめたりまとめなかったりしようと思います。
+もし今後、今回のコピー本が再録されるときにはまとめたりまとめなかったりしようと思います。
 おわり。
