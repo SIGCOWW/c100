@@ -31,7 +31,7 @@ RTNETLINK answers: File exists
 でも、RTNETLINK？Netlinkの話なのになんで先頭に@<b>{RT}があんだよ、教えはどうなってんだ教えはって話です。
 ここで@<bou>{RT}はRoutingのことを指します。
 Routingと@<b>{Net}linkなんてすごく関係していそうですね。
-Nelinkにはいくつか種別があり、その中のひとつがRTNETLINKです。
+Netlinkにはいくつか種別があり、その中のひとつがRTNETLINKです。
 他の種別、例えばnetfilter関連のNETLINK_NETFILTERや本当にLinuxカーネルとユーザランドのIPCとして利用可能なNETLINK_GENERICもあります。
 が、それらは割愛して本稿ではRTNETLINKを中心に紹介していきます。
 
