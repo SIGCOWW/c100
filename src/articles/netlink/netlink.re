@@ -46,7 +46,7 @@ CPCはユーザランドのプログラムを指します。
 例を挙げると、RTNETLINKという1つのFECに対して複数のipコマンドが接続でき、
 1つのipコマンドはRTNETLINK以外にも他のNetlink種別に接続しようと思えばできます。
 
-//imagew[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
+//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
 次のコードはユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
