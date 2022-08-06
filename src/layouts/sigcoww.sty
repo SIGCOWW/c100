@@ -220,7 +220,7 @@
    \advance\leftskip \@lnumwidth \null\nobreak\hskip -\leftskip%
    \begin{widepage}{#4}\nobreak%
      \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{\textcolor{yryrblack}{.}}\mkern \@dotsep mu$}\hfill%
-     \nobreak\hb@xt@\@pnumwidth{\hfil\sffamily#5}\hspace*{1pt}\end{widepage}%
+     \nobreak\hb@xt@\@pnumwidth{\hfil\sffamily#5}\hspace*{0pt}\end{widepage}%
    \par\vskip1.5\baselineskip}\fi}
 
 % \section{}
@@ -322,7 +322,9 @@
   \fancyfoot[RO]{}%
   \fi}
 %
-\newcommand{\sigcowwpage}{\begin{eyecatch}{0}\colorbox{yryrblack}{\textcolor{yryrwhite}{\Huge\sigcowwtitle}}\end{eyecatch}}
+\newcommand{\sigcowwpage}{\begin{eyecatch}{0}%
+\colorbox{yryrblack}{\noindent\headfont\Huge\strut\;\textcolor{white}{\sigcowwtitle}}%
+\end{eyecatch}}
 \newcommand{\@aftereyecatch}{}
 \newenvironment{eyecatch}[1]{%
   \clearpage
