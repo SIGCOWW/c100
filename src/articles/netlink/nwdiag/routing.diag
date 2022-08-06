@@ -1,0 +1,13 @@
+{
+  colwidth = 32
+
+  0-7: Family（AF_INET, AF_INET6）
+  8-15: Src Length (Src IPAddrのPrefix Length)
+  16-23: Dest Length (Dst IPAddrのPrefix)
+  24-31: TOS
+  32-39: Table ID
+  40-47: Protocol
+  48-55: Scope
+  56-63: Type
+  64-95: Flags
+}
