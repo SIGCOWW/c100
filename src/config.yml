@@ -1,7 +1,7 @@
 booktitle: "kmm?"                                # 本のタイトル
 aut: [ "SIGCOWW" ]                               # 著者リスト (EPUBで使われる)
 date: "2022-08-13"                               # 発行日
-prt: "株式会社ポプルス"                          # 印刷所
+#prt: "セルフコピー"                             # 印刷所
 pbl: "SIGCOWW"                                   # 発行者
 oth: "https://sigcoww.org/"                      # Webサイト 省略可
 edt: "sigcoww@sigcoww.org"                       # 連絡先 省略可
@@ -9,11 +9,11 @@ feedback: "https://sigcoww.org/book/kmm/"        # 連絡フォーム 省略可
 msg: "https://sigcoww.org/ で既刊紹介中"         # メッセージ 省略可
 
 container_version: "kancolle"                    # desk のバージョン 省略可
-layout_hash: "29c145e8f139ac90a42b623f8c52f37f"  # layout.tex.erb のMD5ハッシュ 省略可
-sty_hash: "c202f8f4271d4302373d63acabe651b2"     # sigcoww.sty のMD5ハッシュ 省略可
-#titlelatex: '\sigcowwpage'                       # 扉ページ 省略可
+#layout_hash: "29c145e8f139ac90a42b623f8c52f37f" # layout.tex.erb のMD5ハッシュ 省略可
+#sty_hash: "c202f8f4271d4302373d63acabe651b2"    # sigcoww.sty のMD5ハッシュ 省略可
+titlelatex: '\sigcowwpage'                       # 扉ページ 省略可
 download: "https://sigcoww.org/book/kmm/?key=%s" # ダウンロードコード用文字列 省略可
-tallymark: false                                 # ページ数を正の字で表現する 省略可
+tallymark: true                                  # ページ数を正の字で表現する 省略可
 
 debug: true
 language: ja
