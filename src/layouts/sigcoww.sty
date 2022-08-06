@@ -116,18 +116,7 @@
   \begin{scope}[shift={(current page.north west)}]%
     \fill[#1] (-100pt, 100pt) rectangle (\paperwidth, -\chapterheight-10pt);
   \end{scope}\end{tikzpicture}}
-\newcommand{\tume}{\if@mainmatter\if@twoside%
-  \checkoddpage\ifoddpage%
-    \def\tumewidth@{-5mm-5mm}\def\tumeorigin@{east}%
-  \else%
-    \def\tumewidth@{5mm+5mm}\def\tumeorigin@{west}%
-  \fi%
-  \count@\value{chapter}%
-  \begin{tikzpicture}[remember picture, overlay]\begin{scope}[shift={($%
-    (current page.north \tumeorigin@)+(-6pt,-\chapterheight-10pt)+\count@*(0,-10mm)$)}]%
-      \fill[yryrblackblack] (0, 0) rectangle (\tumewidth@, 10mm);%
-    \end{scope}%
-  \end{tikzpicture}\fi\fi}
+\newcommand{\tume}{}
 
 % chapterなし
 \if@twoside\else\fancyfootoffset[RO]{\dimexpr\marginparsep+\marginparwidth\relax}\fi
@@ -139,8 +128,8 @@
   \fancyhead[LO]{\hashira{yryrwhite}{yryrblack}{\sffamily\leftmark}}
 \fi
 \fancyfoot{}
-\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
-\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily{CCCC}\noukin}\tume}
+\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily{CCCC}\noukin}\tume}
 \renewcommand{\footrulewidth}{0pt}
 \renewcommand{\headrulewidth}{0pt}
 
@@ -148,8 +137,8 @@
 \fancypagestyle{plainhead}{%
 \fancyhead{\chaphashira{yryrwhite}}
 \fancyfoot{}
-\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
-\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily{BBBB}\noukin}\tume}
+\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily{BBBB}\noukin}\tume}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}}
 
@@ -157,8 +146,8 @@
 \fancypagestyle{fancytitle}{%
 \fancyhead{}
 \fancyfoot{}
-%\fancyfoot[LE]{\nombre{yryrblack}{yryrblack}{\sffamily\noukin AAAA}}
-%\fancyfoot[RO]{\nombre{yryrblack}{yryrblack}{\sffamily\noukin AAAA}}
+\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily{AAAA}\noukin}}
+\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily{AAAA}\noukin}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}}
 %
@@ -327,9 +316,12 @@
   %\ifnum\count@=1{\padding@\padding@\padding@}\fi%
   %\ifnum\count@=2{\padding@\padding@}\fi%
   %\ifnum\count@=3{\padding@}\fi%
+  \fancyfoot{}%
+  \fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily{DDDD}\noukin}}%
+  \fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily{DDDD}\noukin}}%
   \fi}
 %
-\newcommand{\sigcowwpage}{\begin{eyecatch}{0}\sigcowwtitle\end{eyecatch}\fancyfoot{}}
+\newcommand{\sigcowwpage}{\begin{eyecatch}{0}\sigcowwtitle\end{eyecatch}}
 \newcommand{\@aftereyecatch}{}
 \newenvironment{eyecatch}[1]{%
   \clearpage
