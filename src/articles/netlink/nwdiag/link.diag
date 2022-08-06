@@ -1,0 +1,10 @@
+{
+  colwidth = 32
+
+  0-7: Family（常にAF_UNSPEC）
+  8-15: Reserved
+  16-31: Device Type (Ethernet, Tunnel, etc.)
+  32-63: Interface Index
+  64-95: Device Flags
+  96-127: Change Mask (0xFFFFFFFF)
+}
