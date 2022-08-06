@@ -116,40 +116,29 @@
   \begin{scope}[shift={(current page.north west)}]%
     \fill[#1] (-100pt, 100pt) rectangle (\paperwidth, -\chapterheight-10pt);
   \end{scope}\end{tikzpicture}}
-\newcommand{\tume}{\if@mainmatter\if@twoside%
-  \checkoddpage\ifoddpage%
-    \def\tumewidth@{-5mm-5mm}\def\tumeorigin@{east}%
-  \else%
-    \def\tumewidth@{5mm+5mm}\def\tumeorigin@{west}%
-  \fi%
-  \count@\value{chapter}%
-  \begin{tikzpicture}[remember picture, overlay]\begin{scope}[shift={($%
-    (current page.north \tumeorigin@)+(-6pt,-\chapterheight-10pt)+\count@*(0,-10mm)$)}]%
-      \fill[yryrblackblack] (0, 0) rectangle (\tumewidth@, 10mm);%
-    \end{scope}%
-  \end{tikzpicture}\fi\fi}
+\newcommand{\tume}{}
 
 % chapterなし
 \if@twoside\else\fancyfootoffset[RO]{\dimexpr\marginparsep+\marginparwidth\relax}\fi
 \fancyhead{}
 \if@twoside
-  \fancyhead[LE]{\hashira{yryrwhite}{yryrblack}{\sffamily\leftmark}}
-  \fancyhead[RO]{\hashira{yryrwhite}{yryrblack}{\sffamily\rightmark}}
+  \fancyhead[LE]{\hashira{white}{yryrblack}{\sffamily\leftmark}}
+  \fancyhead[RO]{\hashira{white}{yryrblack}{\sffamily\rightmark}}
 \else
-  \fancyhead[LO]{\hashira{yryrwhite}{yryrblack}{\sffamily\leftmark}}
+  \fancyhead[LO]{\hashira{white}{yryrblack}{\sffamily\leftmark}}
 \fi
 \fancyfoot{}
-\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
-\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[LE]{\nombre{white}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[RO]{\nombre{white}{yryrblack}{\sffamily\noukin}\tume}
 \renewcommand{\footrulewidth}{0pt}
 \renewcommand{\headrulewidth}{0pt}
 
 % chapterあり
 \fancypagestyle{plainhead}{%
-\fancyhead{\chaphashira{yryrwhite}}
+\fancyhead{\chaphashira{white}}
 \fancyfoot{}
-\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
-\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[LE]{\nombre{white}{yryrblack}{\sffamily\noukin}\tume}
+\fancyfoot[RO]{\nombre{white}{yryrblack}{\sffamily\noukin}\tume}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}}
 
@@ -157,8 +146,8 @@
 \fancypagestyle{fancytitle}{%
 \fancyhead{}
 \fancyfoot{}
-\fancyfoot[LE]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}}
-\fancyfoot[RO]{\nombre{yryrwhite}{yryrblack}{\sffamily\noukin}}
+\fancyfoot[LE]{\nombre{white}{yryrblack}{\sffamily\noukin}}
+\fancyfoot[RO]{\nombre{white}{yryrblack}{\sffamily\noukin}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}}
 %
