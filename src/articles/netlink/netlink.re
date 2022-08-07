@@ -10,7 +10,7 @@
 出典はRFC 3549@<fn>{rfc3549}および@<code>{man 7 netlink}、@<code>{man 7 rtnetlink}です。
 //footnote[rfc3549][J.Salim, H.Khosravi, A.Kleen, A.Kuznetsov. ``Linux Netlink as an IP Services Protocol'', RFC 3549.]
 
-まずNetlinkって何か（ねっとり）という話です。
+まずNetlinkとは何か（ねっとり）という話です。
 Netlinkとは「Linuxカーネルとユーザランドのプロセス間通信」です。
 端的に換言せずともIPC (Interprocess Communication)。
 @<tt>{AF_NETLINK}に対してSocketを作ることでNetlinkに接続できます。
