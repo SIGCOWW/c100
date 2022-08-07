@@ -10,7 +10,7 @@
 出典はRFC 3549@<fn>{rfc3549}および@<code>{man 7 netlink}、@<code>{man 7 rtnetlink}です。
 //footnote[rfc3549][J.Salim, H.Khosravi, A.Kleen, A.Kuznetsov. ``Linux Netlink as an IP Services Protocol'', RFC 3549.]
 
-まずNetlinkって何か（ねっとり）という話です。
+まずNetlinkとは何か（ねっとり）という話です。
 Netlinkとは「Linuxカーネルとユーザランドのプロセス間通信」です。
 端的に換言せずともIPC (Interprocess Communication)。
 @<tt>{AF_NETLINK}に対してSocketを作ることでNetlinkに接続できます。
@@ -46,7 +46,7 @@ CPCはユーザランドのプログラムを指します。
 例を挙げると、RTNETLINKという1つのFECに対して複数のipコマンドが接続でき、
 1つのipコマンドはRTNETLINK以外にも他のNetlink種別に接続しようと思えばできます。
 
-//imagew[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
+//image[logical][Netlink Logical Model（RFC3549より引用）][scale=0.7]
 
 実際の接続は@<tt>{socket(2)}と@<tt>{bind(2)}で行います。
 次のコードはユーザランドのプログラムからFECに接続するイメージと@<tt>{struct sockaddr_nl}の定義です。
@@ -270,5 +270,5 @@ NetlinkとRTNETLINKについてまとめました。
 その勉強会でまとめた動機としては、すでにNetlinkとRTNETLINKを使っているプログラムがあり、
 そのプログラムで新たなNetlink Messageを読むためNetlinkの理解を深めるというものでした。
 そのためイチからNetlinkにSocket張ったり、ライブラリ (libnetlink) については本稿でも端折り気味です。
-もし今後、今回のコピー本が再録されるときにはまとめたりまとめなかったりしようと思います。
+もし今後、今回の内容が再録されるときにはまとめたりまとめなかったりしようと思います。
 おわり。
